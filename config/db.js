@@ -6,3 +6,6 @@ mongoose.connect(process.env.DATABASE, { useNewUrlParser: true, useUnifiedTopolo
 mongoose.connection.on('error', (error) => {
     console.log(error);
 })
+
+// imortar modelos
+require('../models/Vacantes');

@@ -16,7 +16,8 @@ const app = express();
 //Habilitar hbs como view
 app.engine('handlebars',
     exphbs({
-        defaultLayout: 'layout'
+        defaultLayout: 'layout',
+        helpers: require('./helpers/handlebars')
     })
 );
 app.set('view engine', 'handlebars');
