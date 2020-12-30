@@ -28,13 +28,19 @@
     <header class="site-header contenedor separador">
         <h2>{{nombrePagina}}</h2>
         {{#if tagline}}
-        <p class="tagline">{{tagline}}</p>
+            <p class="tagline">{{tagline}}</p>
         {{/if}}
         {{#if boton}}
-        <a href="/vacantes/nueva" class="btn btn-azul">Publicar nueva vacante</a>
+            <a href="/vacantes/nueva" class="btn btn-azul">Publicar nueva vacante</a>
         {{/if}}
     </header>
     <div class="contendo-principal contenedor">
+        {{#if mensajes}}
+            <div class="alertas">
+                {{#mostrarAlertas mensajes}}
+                {{/mostrarAlertas }}
+            </div>
+        {{/if }}
         {{{body}}}
     </div>
 
