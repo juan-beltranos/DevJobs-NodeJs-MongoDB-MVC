@@ -41,9 +41,17 @@ exports.crearUsuario = async (req, res, next) => {
     // Crear el usuario
     const usuario = new Usuarios(req.body);
     //console.log(usuario);
-    const nuevoUsuario = await usuario.save();
-
-    if (!nuevoUsuario) return next();
-
-    res.redirect('/iniciar-sesion');
+    try {
+        const nuevoUsuario = await usuario.save();
+        res.redirect('/iniciar-sesion');
+    } catch (error) {
+        req.flash('error', error);
+        res.redirect('/crear-cuenta');
+    }
+}
+//Formulario para iniciar sesion
+exports.formIniciarSesion = (req, res) => {
+    res.render('iniciar-sesion', {
+        nombrePagina: 'Iniciar Sesion DevJobs'
+    })
 }
