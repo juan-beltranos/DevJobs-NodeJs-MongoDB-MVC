@@ -1,5 +1,6 @@
 
 const Vacante = require('../models/Vacantes');
+const { body, validationResult } = require('express-validator');
 
 exports.formularioNuevaVacante = (req, res) => {
     res.render('nueva-vacante', {
@@ -8,6 +9,34 @@ exports.formularioNuevaVacante = (req, res) => {
         cerrarSesion: true,
         nombre: req.user.nombre,
     })
+}
+exports.validarVacante = async (req, res, next) => {
+    //sanitizar los campos
+    const rules = [
+        body('titulo').not().isEmpty().withMessage('Arega un titulo a la vacante').escape(),
+        body('ubicacion').not().isEmpty().withMessage('Agrega una empresa').escape(),
+        body('salario').not().isEmpty().withMessage('Agrega una ubicacion').escape(),
+        body('contrato').not().isEmpty().withMessage('Selecciona el tipo de contrato').escape(),
+        body('skills').not().isEmpty().withMessage('Agrega al menos una habilidad').escape(),
+    ];
+
+    await Promise.all(rules.map(validation => validation.run(req)));
+    const errores = validationResult(req);
+    //si hay errores
+    if (!errores.isEmpty()) {
+        req.flash('error', errores.array().map(error => error.msg));
+        res.render('nueva-vacante', {
+            nombrePagina: 'Nueva vacante',
+            tagline: 'Llena el formulario y publica tu vacante',
+            cerrarSesion: true,
+            nombre: req.user.nombre,
+            mensajes: req.flash()
+        })
+        return;
+    }
+    // console.log(errores);
+    //si toda la validacion es correcta
+    next();
 }
 
 //Agrega vacantes a la BD
@@ -70,7 +99,10 @@ exports.editarVacante = async (req, res, next) => {
         runValidators: true
 
     });
-
     res.redirect(`/vacantes/${vacante.url}`)
+}
 
+exports.eliminarVacante = async (req, res) => {
+    const { id } = req.params;
+    console.log(id);
 }

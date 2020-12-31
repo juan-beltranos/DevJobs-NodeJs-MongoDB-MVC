@@ -86,3 +86,35 @@ exports.editarPerfil = async (req, res) => {
 
     // console.log(usuario);
 }
+
+// sanitizar y validar form de editar perfiles
+exports.validarPerfil = async (req, res, next) => {
+    //sanitizar los campos
+    const rules = [
+        body('nombre').not().isEmpty().withMessage('El nombre no puede ir vacio').escape(),
+        body('email').isEmail().withMessage('El correo no puede ir vacio').normalizeEmail(),
+    ];
+    if (req.body.password) {
+        body('password').not().isEmpty().escape();
+    }
+
+    await Promise.all(rules.map(validation => validation.run(req)));
+    const errores = validationResult(req);
+    //si hay errores
+    if (!errores.isEmpty()) {
+        req.flash('error', errores.array().map(error => error.msg));
+        res.render('crear-cuenta', {
+            nombrePagina: 'Edita tu perfil en devJobs',
+            usuario: req.user,
+            nombre: req.user.nombre,
+            apellidos: req.user.apellidos,
+            email: req.user.email,
+            cerrarSesion: true,
+            mensajes: req.flash()
+        })
+        return;
+    }
+    //console.log(errores);
+    //si toda la validacion es correcta
+    next();
+}
