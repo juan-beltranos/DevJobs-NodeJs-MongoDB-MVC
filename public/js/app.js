@@ -10,12 +10,10 @@ document.addEventListener('DOMContentLoaded', () => {
         limpiarAlertas();
     }
     if (skills) {
-
         skills.addEventListener('click', agregarSkills);
 
         //una vez que estamos en editar,llamar la funcion
         skillsSeleccionados();
-
     }
 
     // 
@@ -71,7 +69,50 @@ const limpiarAlertas = () => {
     }, 2000)
 }
 
-//Eliminar vacantes
+// Eliminar vacantes
 const accionesListado = e => {
-    console.log(e);
+    e.preventDefault();
+    if (e.target.dataset.eliminar) {
+        // eliminar por axios
+        Swal.fire({
+            title: '¿Confirmar Eliminación?',
+            text: "Una vez eliminada, no se puede recuperar",
+            type: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#d33',
+            confirmButtonText: 'Si, Eliminar',
+            cancelButtonText: 'No, Cancelar'
+        }).then((result) => {
+            if (result.value) {
+
+                // enviar la petición con axios
+                const url = `${location.origin}/vacantes/eliminar/${e.target.dataset.eliminar}`;
+
+                // Axios para eliminar el registro
+                axios.delete(url, { params: { url } })
+                    .then(function (respuesta) {
+                        if (respuesta.status === 200) {
+                            Swal.fire(
+                                'Eliminado',
+                                respuesta.data,
+                                'success'
+                            );
+
+                            //Eliminar del DOM
+                            e.target.parentElement.parentElement.parentElement.removeChild(e.target.parentElement.parentElement);
+                        }
+                    })
+                    .catch(() => {
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Hubo un error',
+                            text: 'No Se pudo eliminar'
+                        })
+                    })
+            }
+        })
+    } else if (e.target.tagName === 'A') {
+        window.location.href = e.target.href;
+    }
 }
